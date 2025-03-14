@@ -34,12 +34,11 @@ extern Player player;
 // Function prototypes
 // Add function prototype
 
-void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h);
-void handle_events(int *running); // Change from SDL_Event * to int *
-
-SDL_Renderer* get_renderer(void);
-int init_sdl();
-void close_sdl();
+void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x);
+void handle_events(int *running);
+SDL_Renderer *get_renderer(void);
+int init_sdl(void);
+void close_sdl(void);
 void move_player(float dx, float dy);
-SDL_Texture *loadTexture(const char *path, SDL_Renderer *renderer);
+SDL_Texture *loadTexture(SDL_Renderer *renderer, const char *file_path);
 #endif /* RAYCASTING_H */
