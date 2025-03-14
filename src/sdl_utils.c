@@ -1,10 +1,8 @@
+#include "sdl_utils.h"
 #include "raycasting.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
-Player player = {3.5, 3.5, M_PI / 4}; // Initial player position
 
 int init_sdl()
 {

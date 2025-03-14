@@ -1,8 +1,5 @@
 #include "raycasting.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-
 // Draw walls with texture mapping
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x) {
     SDL_Rect srcRect, dstRect;
@@ -28,7 +25,7 @@ void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int 
 }
 
 // Raycasting function
-void cast_rays(SDL_Renderer *renderer, SDL_Texture *texture) {
+void raycasting(SDL_Renderer *renderer, SDL_Texture *texture) {
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player.angle - (FOV / 2) + (x * FOV / SCREEN_WIDTH);
         float rayDirX = cos(rayAngle);
@@ -110,22 +107,9 @@ void game_loop(SDL_Renderer *renderer, SDL_Texture *texture) {
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
 
-        cast_rays(renderer, texture);
+        // Cast rays and render walls
+        raycasting(renderer, texture);
 
         SDL_RenderPresent(renderer);
     }
-}
-
-// Main function
-int main() {
-    if (!init_sdl()) return 1;
-
-    SDL_Texture *wallTexture = loadTexture(renderer, "wall_texture.png");
-    if (!wallTexture) return 1;
-
-    game_loop(renderer, wallTexture);
-
-    SDL_DestroyTexture(wallTexture);
-    close_sdl();
-    return 0;
 }

@@ -1,15 +1,35 @@
+# Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic $(shell sdl2-config --cflags)
-LDFLAGS = $(shell sdl2-config --libs) -lm -lSDL2_image
+CFLAGS = -Wall -Werror -Wextra -pedantic
+LDFLAGS = -lSDL2 -lSDL2_image -lm  # Added -lm for math library
 
-SRC = raycasting.c player.c map.c sdl_utils.c raycast.c
-OBJ = $(SRC:.c=.o)
+# Directories
+SRC_DIR = src
+INC_DIR = inc
+OBJ_DIR = obj
 
-raycasting: $(OBJ)
-	$(CC) $(OBJ) -o raycasting $(LDFLAGS)
+# Source and object files
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# Target executable
+TARGET = raycasting_game
 
+# Default target
+all: $(TARGET)
+
+# Link object files to create the executable
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Compile source files into object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
+
+# Clean up build artifacts
 clean:
-	rm -f $(OBJ) raycasting
+	rm -rf $(OBJ_DIR) $(TARGET)
+
+# Phony targets
+.PHONY: all clean

@@ -21,8 +21,8 @@
 
 // Player structure
 typedef struct {
-    float x, y;
-    float angle;
+    float x, y;     // Player position
+    float angle;    // Player viewing angle
 } Player;
 
 // Global variables
@@ -32,13 +32,30 @@ extern int map[MAP_HEIGHT][MAP_WIDTH];
 extern Player player;
 
 // Function prototypes
-// Add function prototype
-
+void raycasting(SDL_Renderer *renderer, SDL_Texture *texture);
+/**
+ * Draws a wall slice with texture mapping.
+ */
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x);
+
+/**
+ * Handles SDL events (e.g., keyboard input, window close).
+ */
 void handle_events(int *running);
-SDL_Renderer *get_renderer(void);
-int init_sdl(void);
-void close_sdl(void);
+
+/**
+ * Moves the player by (dx, dy) if the new position is not a wall.
+ */
 void move_player(float dx, float dy);
-SDL_Texture *loadTexture(SDL_Renderer *renderer, const char *file_path);
+
+/**
+ * Casts rays and renders the walls.
+ */
+void cast_rays(SDL_Renderer *renderer, SDL_Texture *texture);
+
+/**
+ * Main game loop.
+ */
+void game_loop(SDL_Renderer *renderer, SDL_Texture *texture);
+
 #endif /* RAYCASTING_H */
