@@ -1,6 +1,7 @@
 #include "raycasting.h"
 
-Player player = {3.5, 3.5, M_PI / 4};
+// Define the player variable
+Player player = {3.5, 3.5, M_PI / 4}; // Initial position and angle
 
 void handle_events(int *running) {
     SDL_Event event;
@@ -23,6 +24,14 @@ void handle_events(int *running) {
             } else if (event.key.keysym.sym == SDLK_RIGHT) {
                 player.angle += 0.1; // Rotate right (arrow key)
             }
+        } else if (event.type == SDL_MOUSEMOTION) {
+            // Rotate based on mouse movement
+            int mouse_x = event.motion.x;
+            int delta_x = mouse_x - (SCREEN_WIDTH / 2);
+            player.angle += delta_x * 0.005; // Adjust sensitivity as needed
+
+            // Lock mouse to the center of the screen (optional)
+            SDL_WarpMouseInWindow(window, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
         }
     }
 }

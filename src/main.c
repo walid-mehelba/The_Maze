@@ -8,66 +8,24 @@
 
 int main() {
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    // Create the window
-    window = SDL_CreateWindow("Jungle Raycasting",
-                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (!window) {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
-    // Create the renderer
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
+    if (!init_sdl()) {
+        fprintf(stderr, "Failed to initialize SDL!\n");
         return 1;
     }
 
     // Load textures
-    if (!load_textures(renderer)) {
-        printf("Failed to load textures!\n");
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
+    SDL_Texture *wallTexture = loadTexture(renderer, "assets/jungle_texture.png");
+    if (!wallTexture) {
+        fprintf(stderr, "Failed to load wall texture!\n");
+        close_sdl();
         return 1;
     }
 
-    // Main game loop
-    int running = 1;
-    SDL_Event event;
-    while (running) {
-        // Handle events
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = 0;
-            }
-            handle_events(&running);
-        }
-
-        // Clear the screen
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
-        // Render the scene
-        raycasting(renderer, wall_texture);
-
-        // Update the screen
-        SDL_RenderPresent(renderer);
-    }
+    // Start the game loop
+    game_loop(renderer, wallTexture);
 
     // Clean up
-    free_textures();
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    SDL_DestroyTexture(wallTexture);
+    close_sdl();
     return 0;
 }

@@ -103,7 +103,7 @@ void raycasting(SDL_Renderer *renderer, SDL_Texture *texture) {
 void game_loop(SDL_Renderer *renderer, SDL_Texture *texture) {
     int running = 1;
     while (running) {
-        handle_events(&running);
+        handle_events(&running); // Handle events (keyboard and mouse input)
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
 
