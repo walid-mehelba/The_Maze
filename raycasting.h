@@ -1,6 +1,7 @@
 #ifndef RAYCASTING_H
 #define RAYCASTING_H
 
+#include "sdl_utils.h"
 #include <SDL2/SDL.h>
 #include <math.h>
 #include <stdio.h>
@@ -31,10 +32,14 @@ extern int map[MAP_HEIGHT][MAP_WIDTH];
 extern Player player;
 
 // Function prototypes
+// Add function prototype
+SDL_Renderer *get_renderer();
+void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h);
+void handle_events(SDL_Event *event); // Ensure correct parameter
+
+
 int init_sdl();
 void close_sdl();
-void draw_walls();
-void handle_events(int *running);
 void move_player(float dx, float dy);
-void draw_walls();
+SDL_Texture *loadTexture(const char *path, SDL_Renderer *renderer);
 #endif /* RAYCASTING_H */

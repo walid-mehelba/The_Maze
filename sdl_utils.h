@@ -6,5 +6,5 @@
 #include <stdio.h>
 
 SDL_Texture *loadTexture(const char *path, SDL_Renderer *renderer);
-
+SDL_Texture *loadTexture(const char *filename);
 #endif /* SDL_UTILS_H */

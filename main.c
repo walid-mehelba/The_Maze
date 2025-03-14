@@ -5,6 +5,9 @@
 #define SCREEN_HEIGHT 600
 
 int main() {
+	int x = 100, y = 100; // Change as needed
+	int wall_width = 50, wall_height = 50; // Assign appropriate values
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
