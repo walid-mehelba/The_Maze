@@ -6,27 +6,19 @@ void handle_events(int *running)
     while (SDL_PollEvent(&event))
     {
         if (event.type == SDL_QUIT)
-            *running = 0;
-        if (event.type == SDL_KEYDOWN)
         {
-            switch (event.key.keysym.sym)
+            *running = 0; // Stop the game loop
+        }
+        else if (event.type == SDL_KEYDOWN)
+        {
+            if (event.key.keysym.sym == SDLK_ESCAPE)
             {
-                case SDLK_LEFT:
-                    player.angle -= 0.1;
-                    break;
-                case SDLK_RIGHT:
-                    player.angle += 0.1;
-                    break;
-                case SDLK_w:
-                    move_player(cos(player.angle) * 0.1, sin(player.angle) * 0.1);
-                    break;
-                case SDLK_s:
-                    move_player(-cos(player.angle) * 0.1, -sin(player.angle) * 0.1);
-                    break;
+                *running = 0; // Quit if ESC is pressed
             }
         }
     }
 }
+
 
 void move_player(float dx, float dy)
 {

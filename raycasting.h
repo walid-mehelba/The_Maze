@@ -33,11 +33,11 @@ extern Player player;
 
 // Function prototypes
 // Add function prototype
-SDL_Renderer *get_renderer();
+
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h);
-void handle_events(SDL_Event *event); // Ensure correct parameter
+void handle_events(int *running); // Change from SDL_Event * to int *
 
-
+SDL_Renderer* get_renderer(void);
 int init_sdl();
 void close_sdl();
 void move_player(float dx, float dy);

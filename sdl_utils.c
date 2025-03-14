@@ -32,33 +32,33 @@ int init_sdl()
         return 0;
     }
 
-    return 1;
+    return 1; // Closing brace fixed here
 }
-/////
+
 SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file_path)
 {
     SDL_Texture *newTexture = NULL;
-    SDL_Surface *loadedSurface = IMG_Load(filePath);
+    SDL_Surface *loadedSurface = IMG_Load(file_path);
     if (loadedSurface == NULL)
     {
-        fprintf(stderr, "Unable to load image %s! SDL_image Error: %s\n", filePath, IMG_GetError());
+        fprintf(stderr, "Unable to load image %s! SDL_image Error: %s\n", file_path, IMG_GetError());
         return NULL;
     }
 
     // Create texture from surface pixels
-    SDL_Texture *newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+    newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
     if (newTexture == NULL)
     {
-        fprintf(stderr, "Unable to create texture from %s! SDL Error: %s\n", filePath, SDL_GetError());
+        fprintf(stderr, "Unable to create texture from %s! SDL Error: %s\n", file_path, SDL_GetError());
     }
 
     SDL_FreeSurface(loadedSurface);
     return newTexture;
-////
+}
+
 void close_sdl()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
-

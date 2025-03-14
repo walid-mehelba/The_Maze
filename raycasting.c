@@ -1,36 +1,35 @@
 #include "raycasting.h"
-#include "sdl_utils.h"
 
 int main(void)
 {
     if (!init_sdl())
         return 1;
 
-    SDL_Renderer *renderer = get_renderer(); // Ensure this function is declared in raycasting.h
-
-    SDL_Texture *jungleTexture = loadTexture("path/to/your/jungle_texture.png", renderer);
-    if (!jungleTexture)
+    SDL_Renderer *renderer = get_renderer();
+    if (!renderer)
     {
-        fprintf(stderr, "Failed to load texture: %s", SDL_GetError());
-        close_sdl(); // Ensure to close SDL properly before returning
+        fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
         return 1;
     }
-    
-    int x = 100;
-    int y = 100;
-    int wall_width = 50;
-    int wall_height = 100;
 
-    while (1) // Replace with actual condition to control the loop
+    SDL_Texture *j_texture = loadTexture("raycasting.png", renderer);
+    if (!j_texture)
     {
-	SDL_Event event;
-        handle_events(&event);
-        
+        fprintf(stderr, "Failed to load texture: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    int running = 1; // Ensure this variable exists
+    while (running)
+    {
+        handle_events(&running);  // Correct: Pass int *running
         SDL_RenderClear(renderer);
-        draw_walls(renderer, jungleTexture, x, y, wall_width, wall_height);
+        SDL_RenderCopy(renderer, j_texture, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
-    
+
+    SDL_DestroyTexture(j_texture);
     close_sdl();
+
     return 0;
-    }
+}
