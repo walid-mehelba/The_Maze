@@ -1,4 +1,6 @@
 #include "raycasting.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
@@ -32,10 +34,31 @@ int init_sdl()
 
     return 1;
 }
+/////
+SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file_path)
+{
+    SDL_Texture *newTexture = NULL;
+    SDL_Surface *loadedSurface = IMG_Load(filePath);
+    if (loadedSurface == NULL)
+    {
+        fprintf(stderr, "Unable to load image %s! SDL_image Error: %s\n", filePath, IMG_GetError());
+        return NULL;
+    }
 
+    // Create texture from surface pixels
+    SDL_Texture *newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+    if (newTexture == NULL)
+    {
+        fprintf(stderr, "Unable to create texture from %s! SDL Error: %s\n", filePath, SDL_GetError());
+    }
+
+    SDL_FreeSurface(loadedSurface);
+    return newTexture;
+////
 void close_sdl()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
+
