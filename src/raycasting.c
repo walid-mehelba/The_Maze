@@ -33,10 +33,43 @@ void draw_sky(SDL_Renderer *renderer, SDL_Texture *sky_texture) {
     SDL_RenderCopy(renderer, sky_texture, NULL, &sky_rect);
 }
 
+// Function to render the ground with scrolling effect
+void draw_ground(SDL_Renderer *renderer, SDL_Texture *ground_texture) {
+    // Calculate the offset based on the player's position
+    float offsetX = player.x * 10; // Adjust the multiplier for the desired effect
+    float offsetY = player.y * 10; // Adjust the multiplier for the desired effect
+
+    // Get the texture dimensions
+    int texWidth, texHeight;
+    SDL_QueryTexture(ground_texture, NULL, NULL, &texWidth, &texHeight);
+
+    // Create a source rectangle for the ground texture
+    SDL_Rect srcRect = {
+        (int)offsetX % texWidth, // Offset X
+        (int)offsetY % texHeight, // Offset Y
+        SCREEN_WIDTH, // Width of the ground texture to render
+        SCREEN_HEIGHT / 2 // Height of the ground texture to render
+    };
+
+    // Create a destination rectangle for the ground texture
+    SDL_Rect dstRect = {
+        0, // X position (top-left corner)
+        SCREEN_HEIGHT / 2, // Y position (bottom half of the screen)
+        SCREEN_WIDTH, // Width of the ground texture to render
+        SCREEN_HEIGHT / 2 // Height of the ground texture to render
+    };
+
+    // Render the ground texture
+    SDL_RenderCopy(renderer, ground_texture, &srcRect, &dstRect);
+}
+
 // Raycasting function
-void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture) {
+void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture, SDL_Texture *ground_texture) {
     // Draw the sky
     draw_sky(renderer, sky_texture);
+
+    // Draw the ground
+    draw_ground(renderer, ground_texture);
 
     // Cast rays and render walls
     for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -113,7 +146,7 @@ void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_t
 }
 
 // Game loop
-void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture) {
+void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture, SDL_Texture *ground_texture) {
     int running = 1;
     while (running) {
         handle_events(&running); // Handle events (keyboard and mouse input)
@@ -123,8 +156,11 @@ void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_te
         // Draw the sky
         draw_sky(renderer, sky_texture);
 
+        // Draw the ground
+        draw_ground(renderer, ground_texture);
+
         // Cast rays and render walls
-        raycasting(renderer, texture, sky_texture);
+        raycasting(renderer, texture, sky_texture, ground_texture);
 
         SDL_RenderPresent(renderer);
     }

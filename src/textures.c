@@ -5,7 +5,7 @@
 // Global texture variables
 SDL_Texture *wall_texture = NULL;
 SDL_Texture *sky_texture = NULL; // Add sky texture
-
+SDL_Texture *ground_texture = NULL; // adding ground texture
 /**
  * Loads all textures (e.g., wall texture and sky texture) into memory.
  * Returns true on success, false on failure.
@@ -24,6 +24,11 @@ bool load_textures(SDL_Renderer *renderer) {
         fprintf(stderr, "Failed to load sky texture! SDL_Error: %s\n", IMG_GetError());
         return false;
     }
+    ground_texture = IMG_LoadTexture(renderer, "assets/ground_texture.png");
+    if (!ground_texture) {
+        fprintf(stderr, "Failed to load ground texture! SDL_Error: %s\n", IMG_GetError());
+        return false;
+    }
 
     return true;
 }
@@ -40,4 +45,8 @@ void free_textures() {
         SDL_DestroyTexture(sky_texture);
         sky_texture = NULL;
     }
-}
+     if (ground_texture) {
+        SDL_DestroyTexture(ground_texture);
+
+    }
+   }
