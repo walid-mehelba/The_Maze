@@ -15,17 +15,19 @@ int main() {
 
     // Load textures
     SDL_Texture *wallTexture = loadTexture(renderer, "assets/jungle_texture.png");
-    if (!wallTexture) {
-        fprintf(stderr, "Failed to load wall texture!\n");
+    SDL_Texture *skyTexture = loadTexture(renderer, "assets/sky_texture.png");
+    if (!wallTexture || !skyTexture) {
+        fprintf(stderr, "Failed to load textures!\n");
         close_sdl();
         return 1;
     }
 
     // Start the game loop
-    game_loop(renderer, wallTexture);
+    game_loop(renderer, wallTexture, skyTexture);
 
     // Clean up
     SDL_DestroyTexture(wallTexture);
+    SDL_DestroyTexture(skyTexture);
     close_sdl();
     return 0;
 }

@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-// Draw walls with texture mapping
+// Function to render a wall slice with texture mapping
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x) {
     SDL_Rect srcRect, dstRect;
 
@@ -24,8 +24,21 @@ void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int 
     SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
 }
 
+// Function to render the sky
+void draw_sky(SDL_Renderer *renderer, SDL_Texture *sky_texture) {
+    // Set the destination rectangle for the sky (top half of the screen)
+    SDL_Rect sky_rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+
+    // Render the sky texture
+    SDL_RenderCopy(renderer, sky_texture, NULL, &sky_rect);
+}
+
 // Raycasting function
-void raycasting(SDL_Renderer *renderer, SDL_Texture *texture) {
+void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture) {
+    // Draw the sky
+    draw_sky(renderer, sky_texture);
+
+    // Cast rays and render walls
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player.angle - (FOV / 2) + (x * FOV / SCREEN_WIDTH);
         float rayDirX = cos(rayAngle);
@@ -100,15 +113,18 @@ void raycasting(SDL_Renderer *renderer, SDL_Texture *texture) {
 }
 
 // Game loop
-void game_loop(SDL_Renderer *renderer, SDL_Texture *texture) {
+void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture) {
     int running = 1;
     while (running) {
         handle_events(&running); // Handle events (keyboard and mouse input)
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
 
+        // Draw the sky
+        draw_sky(renderer, sky_texture);
+
         // Cast rays and render walls
-        raycasting(renderer, texture);
+        raycasting(renderer, texture, sky_texture);
 
         SDL_RenderPresent(renderer);
     }

@@ -29,13 +29,13 @@ typedef struct {
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern int map[MAP_HEIGHT][MAP_WIDTH];
-extern Player player;  // Declare player as extern
+extern Player player;
 
 // Function prototypes
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x);
 void handle_events(int *running);
 void move_player(float dx, float dy);
-void raycasting(SDL_Renderer *renderer, SDL_Texture *texture);
-void game_loop(SDL_Renderer *renderer, SDL_Texture *texture);
+void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture); // Updated to include sky_texture
+void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture); // Updated to include sky_texture
 
 #endif /* RAYCASTING_H */
