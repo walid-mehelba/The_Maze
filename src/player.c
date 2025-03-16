@@ -1,4 +1,6 @@
 #include "raycasting.h"
+#include <SDL2/SDL_mixer.h> // For sound effects
+#include <stdbool.h>        // For bool type
 
 // Define the player variable
 Player player = {3.5, 3.5, M_PI / 4}; // Initial position and angle
@@ -66,7 +68,13 @@ void fire_weapon(void) {
 
     // Play gunshot sound if loaded
     if (gunshot_sound) {
-        Mix_PlayChannel(-1, gunshot_sound, 0);
+        if (Mix_PlayChannel(-1, gunshot_sound, 0) == -1) {
+            fprintf(stderr, "Failed to play gunshot sound! SDL_mixer Error: %s\n", Mix_GetError());
+        } else {
+            printf("Gunshot sound played successfully.\n");
+        }
+    } else {
+        fprintf(stderr, "Gunshot sound not loaded!\n");
     }
 
     // Add recoil effect
@@ -80,12 +88,13 @@ bool load_sounds(void) {
         return false;
     }
 
-    gunshot_sound = Mix_LoadWAV("assets/weapons/gunshot.wav");
+    gunshot_sound = Mix_LoadWAV("assets/sounds/final_shot.wav");
     if (!gunshot_sound) {
         fprintf(stderr, "Failed to load gunshot sound! SDL_mixer Error: %s\n", Mix_GetError());
         return false;
     }
 
+    printf("Gunshot sound loaded successfully.\n");
     return true;
 }
 

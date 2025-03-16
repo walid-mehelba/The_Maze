@@ -23,6 +23,12 @@ int main() {
         close_sdl();
         return 1;
     }
+    // load sound
+      if (!load_sounds()) {
+        fprintf(stderr, "Failed to load sounds!\n");
+        close_sdl();
+        return 1;
+    }
 
     // Start the game loop
     game_loop(renderer, wallTexture, skyTexture, groundTexture, weaponTexture);
