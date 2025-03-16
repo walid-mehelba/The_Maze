@@ -31,7 +31,7 @@ bool load_textures(SDL_Renderer *renderer) {
         return false;
     }
      // Load weapon texture
-    weapon_texture = IMG_LoadTexture(renderer, "assets/weapons/weapon_texture.png");
+    weapon_texture = IMG_LoadTexture(renderer, "assets/weapons/weapon_texture3.png");
     if (!weapon_texture) {
         fprintf(stderr, "Failed to load weapon texture! SDL_Error: %s\n", IMG_GetError());
         return false;

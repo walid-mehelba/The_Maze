@@ -66,8 +66,8 @@ void draw_ground(SDL_Renderer *renderer, SDL_Texture *ground_texture) {
 // Function to render the weapon on the screen
 void draw_weapon(SDL_Renderer *renderer, SDL_Texture *weapon_texture) {
     // Define the position and size of the weapon on the screen
-    int weapon_width = SCREEN_WIDTH / 4; // Adjust size as needed
-    int weapon_height = SCREEN_HEIGHT / 3; // Adjust size as needed
+    int weapon_width = SCREEN_WIDTH / 3; // Adjust size as needed
+    int weapon_height = SCREEN_HEIGHT / 2; // Adjust size as needed
     int weapon_x = (SCREEN_WIDTH - weapon_width) / 2; // Center horizontally
     int weapon_y = SCREEN_HEIGHT - weapon_height; // Place at the bottom
 
