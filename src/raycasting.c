@@ -63,6 +63,24 @@ void draw_ground(SDL_Renderer *renderer, SDL_Texture *ground_texture) {
     SDL_RenderCopy(renderer, ground_texture, &srcRect, &dstRect);
 }
 
+// Function to render the weapon on the screen
+void draw_weapon(SDL_Renderer *renderer, SDL_Texture *weapon_texture) {
+    // Define the position and size of the weapon on the screen
+    int weapon_width = SCREEN_WIDTH / 4; // Adjust size as needed
+    int weapon_height = SCREEN_HEIGHT / 3; // Adjust size as needed
+    int weapon_x = (SCREEN_WIDTH - weapon_width) / 2; // Center horizontally
+    int weapon_y = SCREEN_HEIGHT - weapon_height; // Place at the bottom
+
+    // Add recoil effect
+    if (recoil_offset > 0) {
+        weapon_y -= recoil_offset;
+        recoil_offset -= 2; // Gradually reduce recoil
+    }
+
+    SDL_Rect weapon_rect = {weapon_x, weapon_y, weapon_width, weapon_height};
+    SDL_RenderCopy(renderer, weapon_texture, NULL, &weapon_rect);
+}
+
 // Raycasting function
 void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture, SDL_Texture *ground_texture) {
     // Draw the sky
@@ -146,7 +164,7 @@ void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_t
 }
 
 // Game loop
-void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture, SDL_Texture *ground_texture) {
+void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture, SDL_Texture *ground_texture, SDL_Texture *weapon_texture) {
     int running = 1;
     while (running) {
         handle_events(&running); // Handle events (keyboard and mouse input)
@@ -161,6 +179,9 @@ void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_te
 
         // Cast rays and render walls
         raycasting(renderer, texture, sky_texture, ground_texture);
+
+        // Draw the weapon
+        draw_weapon(renderer, weapon_texture);
 
         SDL_RenderPresent(renderer);
     }

@@ -24,11 +24,19 @@ bool load_textures(SDL_Renderer *renderer) {
         fprintf(stderr, "Failed to load sky texture! SDL_Error: %s\n", IMG_GetError());
         return false;
     }
+    // Load ground texture
     ground_texture = IMG_LoadTexture(renderer, "assets/ground_texture.png");
     if (!ground_texture) {
         fprintf(stderr, "Failed to load ground texture! SDL_Error: %s\n", IMG_GetError());
         return false;
     }
+     // Load weapon texture
+    weapon_texture = IMG_LoadTexture(renderer, "assets/weapons/weapon_texture.png");
+    if (!weapon_texture) {
+        fprintf(stderr, "Failed to load weapon texture! SDL_Error: %s\n", IMG_GetError());
+        return false;
+    }
+
 
     return true;
 }
@@ -48,5 +56,9 @@ void free_textures() {
      if (ground_texture) {
         SDL_DestroyTexture(ground_texture);
 
+    }
+      if (weapon_texture) {
+        SDL_DestroyTexture(weapon_texture);
+        weapon_texture = NULL;
     }
    }

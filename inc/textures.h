@@ -8,6 +8,7 @@
 // Global texture variable
 extern SDL_Texture *wall_texture;
 extern SDL_Texture *sky_texture;
+extern SDL_Texture *weapon_texture;
 /**
  * Loads all textures (e.g., wall texture) into memory.
  * Returns true on success, false on failure.
