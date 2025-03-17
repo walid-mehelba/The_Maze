@@ -23,10 +23,10 @@ void handle_events(int *running) {
                 move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle)); // Move forward
             } else if (event.key.keysym.sym == SDLK_s) {
                 move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle)); // Move backward
-            } else if (event.key.keysym.sym == SDLK_a) {
+            } else if (event.key.keysym.sym == SDLK_d) {
                 // Strafe left
                 move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
-            } else if (event.key.keysym.sym == SDLK_d) {
+            } else if (event.key.keysym.sym == SDLK_a) {
                 // Strafe right
                 move_player(0.1 * sin(player.angle), -0.1 * cos(player.angle));
             } else if (event.key.keysym.sym == SDLK_LEFT) {
