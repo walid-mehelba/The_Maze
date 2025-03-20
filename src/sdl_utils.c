@@ -1,7 +1,7 @@
-#include "sdl_utils.h"
-#include "raycasting.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "../inc/sdl_utils.h"
+#include "../inc/raycasting.h"
+#include </opt/homebrew/include/SDL2/SDL.h>
+#include </opt/homebrew/include/SDL2/SDL_image.h>
 #include <stdio.h>
 
 // Global variables for window and renderer
