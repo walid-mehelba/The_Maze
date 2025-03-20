@@ -1,7 +1,7 @@
-#include <SDL2/SDL.h>
+#include </opt/homebrew/include/SDL2/SDL.h>
 #include <stdio.h>
-#include "inc/raycasting.h"
-#include "inc/textures.h"
+#include "../inc/raycasting.h"
+#include "../inc/textures.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600

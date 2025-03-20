@@ -1,4 +1,4 @@
-#include "raycasting.h"
+#include "../inc/raycasting.h"
 
 // Function to render a wall slice with texture mapping
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x) {
