@@ -29,24 +29,28 @@ void handle_events(int *running) {
         } else if (event.type == SDL_KEYDOWN) {
             if (event.key.keysym.sym == SDLK_ESCAPE) {
                 *running = 0;
-            } else if (event.key.keysym.sym == SDLK_w) {
-                move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle));
-            } else if (event.key.keysym.sym == SDLK_s) {
-                move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle));
-            } else if (event.key.keysym.sym == SDLK_d) {
-                move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
-            } else if (event.key.keysym.sym == SDLK_a) {
-                move_player(0.1 * sin(player.angle), -0.1 * cos(player.angle));
-            } else if (event.key.keysym.sym == SDLK_LEFT) {
-                player.angle -= 0.1;
-            } else if (event.key.keysym.sym == SDLK_RIGHT) {
-                player.angle += 0.1;
+            } else if (event.key.keysym.sym == SDLK_p) { // Toggle pause with 'P'
+                paused = !paused;
+            } else if (!paused) { // Only process movement/fire when not paused
+                if (event.key.keysym.sym == SDLK_w) {
+                    move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle));
+                } else if (event.key.keysym.sym == SDLK_s) {
+                    move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle));
+                } else if (event.key.keysym.sym == SDLK_d) {
+                    move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
+                } else if (event.key.keysym.sym == SDLK_a) {
+                    move_player(0.1 * sin(player.angle), -0.1 * cos(player.angle));
+                } else if (event.key.keysym.sym == SDLK_LEFT) {
+                    player.angle -= 0.1;
+                } else if (event.key.keysym.sym == SDLK_RIGHT) {
+                    player.angle += 0.1;
+                }
             }
-        } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        } else if (event.type == SDL_MOUSEBUTTONDOWN && !paused) { // Fire only when not paused
             if (event.button.button == SDL_BUTTON_LEFT) {
                 fire_weapon();
             }
-        } else if (event.type == SDL_MOUSEMOTION) {
+        } else if (event.type == SDL_MOUSEMOTION && !paused) { // Mouse rotation only when not paused
             int mouse_x = event.motion.x;
             int delta_x = mouse_x - (SCREEN_WIDTH / 2);
             player.angle += delta_x * 0.005;
@@ -79,8 +83,8 @@ void fire_weapon(void) {
         }
     }
     recoil_offset = 20;
-    show_fire_effect = true; // Trigger fire effect
-    fire_start_time = SDL_GetTicks(); // Record start time
+    show_fire_effect = true;
+    fire_start_time = SDL_GetTicks();
 
     float rayDirX = cos(player.angle);
     float rayDirY = sin(player.angle);

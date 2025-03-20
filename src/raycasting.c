@@ -6,10 +6,13 @@ static Uint32 flash_start_time = 0;
 
 // Global flag for fire effect
 bool show_fire_effect = false;
-Uint32 fire_start_time = 0; // Moved from player.c
+Uint32 fire_start_time = 0;
 
 // Font for text rendering
 TTF_Font *font = NULL;
+
+// Pause state
+bool paused = false; // New: Initialized as not paused
 
 // Render a wall slice with texture mapping
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x) {
@@ -65,117 +68,19 @@ void draw_weapon(SDL_Renderer *renderer, SDL_Texture *weapon_texture) {
     SDL_RenderCopy(renderer, weapon_texture, NULL, &weapon_rect);
 }
 
-// Spawn an enemy with a slower random speed between 0.01 and 0.03
+// Spawn an enemy with a fixed position (speed unused)
 void spawn_enemy(float x, float y, SDL_Texture *texture) {
     if (num_enemies < MAX_ENEMIES && map[(int)y][(int)x] == 0) {
-        float speed = 0.01 + (rand() % 3) * 0.01; // Slower range: 0.01 to 0.03
+        float speed = 0.0; // Speed set to 0, unused since enemies are fixed
         enemies[num_enemies] = (Enemy){x, y, texture, true, speed};
         num_enemies++;
     }
 }
 
-// Render all active enemies in the scene
-void render_enemies(SDL_Renderer *renderer) {
-    for (int i = 0; i < num_enemies; i++) {
-        if (!enemies[i].alive) continue;
-
-        float dx = enemies[i].x - player.x;
-        float dy = enemies[i].y - player.y;
-        float distance = sqrt(dx * dx + dy * dy);
-        float enemy_angle = atan2(dy, dx) - player.angle;
-        if (enemy_angle < -M_PI) enemy_angle += 2 * M_PI;
-        if (enemy_angle > M_PI) enemy_angle -= 2 * M_PI;
-
-        if (fabs(enemy_angle) < FOV / 2) {
-            int screen_x = (int)((SCREEN_WIDTH / 2) + (enemy_angle / (FOV / 2)) * (SCREEN_WIDTH / 2));
-            int enemy_size = (int)(SCREEN_HEIGHT / distance);
-            int enemy_y = (SCREEN_HEIGHT - enemy_size) / 2;
-
-            if (screen_x >= 0 && screen_x < SCREEN_WIDTH) {
-                SDL_Rect enemy_rect = {screen_x - enemy_size / 2, enemy_y, enemy_size, enemy_size};
-                SDL_RenderCopy(renderer, enemies[i].texture, NULL, &enemy_rect);
-            }
-        }
-    }
-}
-
-// Move enemies toward the player, avoiding walls and other enemies
-void move_enemies(void) {
-    for (int i = 0; i < num_enemies; i++) {
-        if (!enemies[i].alive) continue;
-
-        float dx = player.x - enemies[i].x;
-        float dy = player.y - enemies[i].y;
-        float distance = sqrt(dx * dx + dy * dy);
-        if (distance < 0.1) continue;
-
-        float moveX = (dx / distance) * enemies[i].speed;
-        float moveY = (dy / distance) * enemies[i].speed;
-
-        float newX = enemies[i].x + moveX;
-        float newY = enemies[i].y + moveY;
-
-        int mapX = (int)newX;
-        int mapY = (int)newY;
-        bool canMove = (map[mapY][mapX] == 0);
-
-        if (canMove) {
-            for (int j = 0; j < num_enemies; j++) {
-                if (j == i || !enemies[j].alive) continue;
-                float enemyDx = newX - enemies[j].x;
-                float enemyDy = newY - enemies[j].y;
-                if (sqrt(enemyDx * enemyDx + enemyDy * enemyDy) < 0.5) {
-                    canMove = false;
-                    break;
-                }
-            }
-        }
-
-        if (canMove) {
-            enemies[i].x = newX;
-            enemies[i].y = newY;
-        } else {
-            newX = enemies[i].x + moveX;
-            newY = enemies[i].y;
-            mapX = (int)newX;
-            mapY = (int)newY;
-            canMove = (map[mapY][mapX] == 0);
-            if (canMove) {
-                for (int j = 0; j < num_enemies; j++) {
-                    if (j == i || !enemies[j].alive) continue;
-                    float enemyDx = newX - enemies[j].x;
-                    float enemyDy = newY - enemies[j].y;
-                    if (sqrt(enemyDx * enemyDx + enemyDy * enemyDy) < 0.5) {
-                        canMove = false;
-                        break;
-                    }
-                }
-                if (canMove) enemies[i].x = newX;
-            }
-
-            newX = enemies[i].x;
-            newY = enemies[i].y + moveY;
-            mapX = (int)newX;
-            mapY = (int)newY;
-            canMove = (map[mapY][mapX] == 0);
-            if (canMove) {
-                for (int j = 0; j < num_enemies; j++) {
-                    if (j == i || !enemies[j].alive) continue;
-                    float enemyDx = newX - enemies[j].x;
-                    float enemyDy = newY - enemies[j].y;
-                    if (sqrt(enemyDx * enemyDx + enemyDy * enemyDy) < 0.5) {
-                        canMove = false;
-                        break;
-                    }
-                }
-                if (canMove) enemies[i].y = newY;
-            }
-        }
-    }
-}
-
-// Enemy attack logic: Reduce player health, play sound, and trigger flash
+// Enemy attack logic: Reduce player health, play sound, and trigger flash (only when not paused)
 void enemy_attack(void) {
+    if (paused) return; // Skip attacks when paused
+
     static Uint32 last_attack_time = 0;
     Uint32 current_time = SDL_GetTicks();
 
@@ -249,6 +154,32 @@ void render_health(SDL_Renderer *renderer) {
     SDL_DestroyTexture(texture);
 }
 
+// Render pause screen
+void render_pause_screen(SDL_Renderer *renderer) {
+    if (!font || !paused) return;
+
+    const char *pause_text = "Paused";
+    SDL_Color color = {255, 255, 255, 255};
+    SDL_Surface *surface = TTF_RenderText_Solid(font, pause_text, color);
+    if (!surface) {
+        fprintf(stderr, "Failed to render pause text! SDL_ttf Error: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        fprintf(stderr, "Failed to create pause texture! SDL_Error: %s\n", SDL_GetError());
+        SDL_FreeSurface(surface);
+        return;
+    }
+
+    SDL_Rect rect = {(SCREEN_WIDTH - surface->w) / 2, (SCREEN_HEIGHT - surface->h) / 2, surface->w, surface->h}; // Center of screen
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
 // Cleanup TTF resources
 void cleanup_ttf(void) {
     if (font) {
@@ -258,10 +189,12 @@ void cleanup_ttf(void) {
     TTF_Quit();
 }
 
-// Perform raycasting to render the 3D scene
+// Perform raycasting and render enemies with depth checking
 void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture, SDL_Texture *ground_texture) {
     draw_sky(renderer, sky_texture);
     draw_ground(renderer, ground_texture);
+
+    float z_buffer[NUM_RAYS];
 
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player.angle - (FOV / 2) + (x * FOV / SCREEN_WIDTH);
@@ -310,6 +243,8 @@ void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_t
         else
             distanceToWall = (mapY - player.y + (1 - stepY) / 2) / rayDirY;
 
+        z_buffer[x] = distanceToWall;
+
         int wallHeight = (int)(SCREEN_HEIGHT / distanceToWall);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         float wallHitX = hitVertical ? player.y + distanceToWall * rayDirY : player.x + distanceToWall * rayDirX;
@@ -318,18 +253,42 @@ void raycasting(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_t
         draw_walls(renderer, texture, x, wallTop, 1, wallHeight, wallHitX);
     }
 
-    render_enemies(renderer);
+    // Render enemies with depth checking
+    for (int i = 0; i < num_enemies; i++) {
+        if (!enemies[i].alive) continue;
+
+        float dx = enemies[i].x - player.x;
+        float dy = enemies[i].y - player.y;
+        float distance = sqrt(dx * dx + dy * dy);
+        float enemy_angle = atan2(dy, dx) - player.angle;
+        if (enemy_angle < -M_PI) enemy_angle += 2 * M_PI;
+        if (enemy_angle > M_PI) enemy_angle -= 2 * M_PI;
+
+        if (fabs(enemy_angle) < FOV / 2) {
+            int screen_x = (int)((SCREEN_WIDTH / 2) + (enemy_angle / (FOV / 2)) * (SCREEN_WIDTH / 2));
+            int enemy_size = (int)(SCREEN_HEIGHT / distance);
+            int enemy_y = (SCREEN_HEIGHT - enemy_size) / 2;
+
+            if (screen_x >= 0 && screen_x < SCREEN_WIDTH) {
+                if (distance < z_buffer[screen_x]) {
+                    SDL_Rect enemy_rect = {screen_x - enemy_size / 2, enemy_y, enemy_size, enemy_size};
+                    SDL_RenderCopy(renderer, enemies[i].texture, NULL, &enemy_rect);
+                }
+            }
+        }
+    }
 }
 
-// Main game loop with cursor, fire effect, and health display
+// Main game loop with pause functionality
 void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_texture, SDL_Texture *ground_texture, SDL_Texture *weapon_texture) {
     int running = 1;
     SDL_ShowCursor(SDL_DISABLE);
 
     while (running) {
         handle_events(&running);
-        move_enemies();
-        enemy_attack();
+        if (!paused) { // Only update game logic when not paused
+            enemy_attack();
+        }
         SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
         SDL_RenderClear(renderer);
 
@@ -348,12 +307,19 @@ void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_te
             }
         }
 
-        // Render fire effect (yellow flash at weapon tip)
+        // Enhanced fire effect with flickering
         if (show_fire_effect) {
             Uint32 current_time = SDL_GetTicks();
-            if (current_time - fire_start_time < 100) {
-                SDL_SetRenderDrawColor(renderer, 255, 255, 0, 150);
-                SDL_Rect fire_rect = {SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT - 100, 20, 20};
+            int elapsed = current_time - fire_start_time;
+            if (elapsed < 150) {
+                int flicker = rand() % 50;
+                SDL_SetRenderDrawColor(renderer, 255, 255 - elapsed / 2, 0, 200 - elapsed / 2);
+                SDL_Rect fire_rect = {
+                    SCREEN_WIDTH / 2 - 15 + (rand() % 10 - 5),
+                    SCREEN_HEIGHT - 120 - (elapsed / 5),
+                    30 + flicker,
+                    30 + flicker
+                };
                 SDL_RenderFillRect(renderer, &fire_rect);
             } else {
                 show_fire_effect = false;
@@ -365,8 +331,9 @@ void game_loop(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Texture *sky_te
         SDL_RenderDrawLine(renderer, SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2, SCREEN_WIDTH / 2 + 10, SCREEN_HEIGHT / 2);
         SDL_RenderDrawLine(renderer, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 10, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 10);
 
-        // Render health
+        // Render health and pause screen
         render_health(renderer);
+        render_pause_screen(renderer);
 
         SDL_RenderPresent(renderer);
     }
