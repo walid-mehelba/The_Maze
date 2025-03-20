@@ -1,36 +1,27 @@
 CC = clang
-CFLAGS = -I/opt/homebrew/include/SDL2 -D_THREAD_SAFE -g
-LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image -lSDL2_mixer
-
-# Source and object files
-SRCS = src/main.c src/map.c src/player.c src/raycasting.c src/textures.c src/sdl_utils.c
-OBJS = $(SRCS:src/%.c=obj/%.o)
-
-# Target executable
+CFLAGS = -I/opt/homebrew/include/SDL2 -Wall -g
+LDLIBS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 TARGET = the_maze
+SRC_DIR = src
+OBJ_DIR = obj
+SOURCES = $(wildcard $(SRC_DIR)/*.c)
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-# Default target
+.PHONY: all clean run
+
 all: $(TARGET)
 
-# Link object files to create the executable
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS)
+$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) $(LDLIBS) -o $@
 
-# Compile source files into object files
-obj/%.o: src/%.c | obj
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Ensure obj/ directory exists
-obj:
-	mkdir -p obj
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
-# Clean up build files
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(OBJ_DIR) $(TARGET)
 
-# Run the executable
 run: $(TARGET)
 	./$(TARGET)
-
-# Phony targets
-.PHONY: all clean run

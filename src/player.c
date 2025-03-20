@@ -1,87 +1,113 @@
 #include "../inc/raycasting.h"
-#include </opt/homebrew/include/SDL2/SDL_mixer.h> // For sound effects
-#include <stdbool.h>        // For bool type
+#include </opt/homebrew/include/SDL2/SDL_mixer.h>
+#include <stdbool.h>
 
-// Define the player variable
-Player player = {3.5, 3.5, M_PI / 4}; // Initial position and angle
+// Player instance with initial position and angle
+Player player = {3.5, 3.5, M_PI / 4};
 
-// Define global variables for weapon state
-int recoil_offset = 0; // Recoil effect for the weapon
-SDL_Texture *weapon_texture = NULL; // Texture for the weapon
-Mix_Chunk *gunshot_sound = NULL; // Sound effect for firing
+// Weapon-related globals
+int recoil_offset = 0;
+SDL_Texture *weapon_texture = NULL;
+Mix_Chunk *gunshot_sound = NULL;
 
-// Function to handle events (keyboard and mouse input)
+// Player health
+int player_health = 100;
+
+// Sound effect for taking damage
+Mix_Chunk *damage_sound = NULL;
+
+// Enemy array and counter
+Enemy enemies[MAX_ENEMIES];
+int num_enemies = 0;
+
+// Handle keyboard and mouse input events
 void handle_events(int *running) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            *running = 0; // Stop the game loop
+            *running = 0;
         } else if (event.type == SDL_KEYDOWN) {
             if (event.key.keysym.sym == SDLK_ESCAPE) {
-                *running = 0; // Quit if ESC is pressed
+                *running = 0;
             } else if (event.key.keysym.sym == SDLK_w) {
-                move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle)); // Move forward
+                move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle));
             } else if (event.key.keysym.sym == SDLK_s) {
-                move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle)); // Move backward
+                move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle));
             } else if (event.key.keysym.sym == SDLK_d) {
-                // Strafe left
                 move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
             } else if (event.key.keysym.sym == SDLK_a) {
-                // Strafe right
                 move_player(0.1 * sin(player.angle), -0.1 * cos(player.angle));
             } else if (event.key.keysym.sym == SDLK_LEFT) {
-                player.angle -= 0.1; // Rotate left (arrow key)
+                player.angle -= 0.1;
             } else if (event.key.keysym.sym == SDLK_RIGHT) {
-                player.angle += 0.1; // Rotate right (arrow key)
+                player.angle += 0.1;
             }
         } else if (event.type == SDL_MOUSEBUTTONDOWN) {
             if (event.button.button == SDL_BUTTON_LEFT) {
-                // Fire the weapon when the left mouse button is pressed
                 fire_weapon();
             }
         } else if (event.type == SDL_MOUSEMOTION) {
-            // Rotate based on mouse movement
             int mouse_x = event.motion.x;
             int delta_x = mouse_x - (SCREEN_WIDTH / 2);
-            player.angle += delta_x * 0.005; // Adjust sensitivity as needed
-
-            // Lock mouse to the center of the screen (optional)
+            player.angle += delta_x * 0.005;
             SDL_WarpMouseInWindow(window, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
         }
     }
+
+    if (player_health <= 0) {
+        *running = 0;
+        printf("Player died!\n");
+    }
 }
 
-// Function to move the player
+// Move the player, checking for wall collisions
 void move_player(float dx, float dy) {
     int new_x = (int)(player.x + dx);
     int new_y = (int)(player.y + dy);
 
-    if (map[new_y][new_x] == 0) { // Prevent walking into walls
+    if (map[new_y][new_x] == 0) {
         player.x += dx;
         player.y += dy;
     }
 }
 
-// Function to fire the weapon
+// Fire the weapon, playing sound, triggering fire effect, and checking for enemy hits
 void fire_weapon(void) {
-   // printf("Weapon fired!\n");
-
-    // Play gunshot sound if loaded
     if (gunshot_sound) {
         if (Mix_PlayChannel(-1, gunshot_sound, 0) == -1) {
             fprintf(stderr, "Failed to play gunshot sound! SDL_mixer Error: %s\n", Mix_GetError());
-        } else {
-           // printf("Gunshot sound played successfully.\n");
         }
-    } else {
-        fprintf(stderr, "Gunshot sound not loaded!\n");
     }
+    recoil_offset = 20;
+    show_fire_effect = true; // Trigger fire effect
+    fire_start_time = SDL_GetTicks(); // Record start time
 
-    // Add recoil effect
-    recoil_offset = 20; // Adjust the recoil distance
+    float rayDirX = cos(player.angle);
+    float rayDirY = sin(player.angle);
+    float rayX = player.x;
+    float rayY = player.y;
+    float distance = 0;
+
+    while (distance < 10) {
+        rayX += rayDirX * 0.1;
+        rayY += rayDirY * 0.1;
+        distance += 0.1;
+
+        if (map[(int)rayY][(int)rayX] > 0) break;
+
+        for (int i = 0; i < num_enemies; i++) {
+            if (!enemies[i].alive) continue;
+            float dx = enemies[i].x - rayX;
+            float dy = enemies[i].y - rayY;
+            if (sqrt(dx * dx + dy * dy) < 0.5) {
+                enemies[i].alive = false;
+                break;
+            }
+        }
+    }
 }
 
-// Function to load weapon sound effects
+// Load sound effects into memory
 bool load_sounds(void) {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
         fprintf(stderr, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
@@ -94,15 +120,24 @@ bool load_sounds(void) {
         return false;
     }
 
-   // printf("Gunshot sound loaded successfully.\n");
+    damage_sound = Mix_LoadWAV("assets/sounds/damage.wav");
+    if (!damage_sound) {
+        fprintf(stderr, "Failed to load damage sound! SDL_mixer Error: %s\n", Mix_GetError());
+        return false;
+    }
+
     return true;
 }
 
-// Function to clean up sound resources
+// Free loaded sound resources
 void free_sounds(void) {
     if (gunshot_sound) {
         Mix_FreeChunk(gunshot_sound);
         gunshot_sound = NULL;
+    }
+    if (damage_sound) {
+        Mix_FreeChunk(damage_sound);
+        damage_sound = NULL;
     }
     Mix_CloseAudio();
 }
