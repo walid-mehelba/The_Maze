@@ -1,8 +1,8 @@
 #ifndef TEXTURES_H
 #define TEXTURES_H
 
-#include </opt/homebrew/include/SDL2/SDL.h>
-#include </opt/homebrew/include/SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL.h>
 #include <stdbool.h>
 
 // Global texture variable

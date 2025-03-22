@@ -1,5 +1,5 @@
 #include "../inc/textures.h"
-#include </opt/homebrew/include/SDL2/SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 
 // Global texture variables (loaded and freed here)

@@ -1,10 +1,11 @@
 #ifndef RAYCASTING_H
 #define RAYCASTING_H
 
-#include </opt/homebrew/include/SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include "sdl_utils.h"
-#include </opt/homebrew/include/SDL2/SDL.h>
-#include </opt/homebrew/include/SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -46,7 +47,10 @@ extern Mix_Chunk *damage_sound;
 extern bool show_damage_flash;
 extern TTF_Font *font;
 extern bool show_fire_effect;       // Flag for fire effect when shooting
-extern Uint32 fire_start_time;      // Time when fire effect started
+extern Uint32 fire_start_time;
+extern Mix_Chunk *damage_sound;
+
+// Time when fire effect started
 
 #define MAX_ENEMIES 20
 extern Enemy enemies[MAX_ENEMIES];

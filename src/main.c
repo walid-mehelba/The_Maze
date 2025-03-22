@@ -1,4 +1,4 @@
-#include </opt/homebrew/include/SDL2/SDL.h>
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include "../inc/map.h"
 #include "../inc/raycasting.h"

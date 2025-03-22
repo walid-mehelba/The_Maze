@@ -1,6 +1,6 @@
 #include "../inc/raycasting.h"
-#include </opt/homebrew/include/SDL2/SDL_mixer.h>
 #include <stdbool.h>
+#include <SDL2/SDL_mixer.h>
 
 // Player instance with initial position and angle
 Player player = {3.5, 3.5, M_PI / 4};
@@ -9,12 +9,14 @@ Player player = {3.5, 3.5, M_PI / 4};
 int recoil_offset = 0;
 SDL_Texture *weapon_texture = NULL;
 Mix_Chunk *gunshot_sound = NULL;
+Mix_Chunk *damage_sound = NULL;
+
 
 // Player health
 int player_health = 100;
 
 // Sound effect for taking damage
-Mix_Chunk *damage_sound = NULL;
+Mix_Chunk *damageSound = NULL;
 
 // Enemy array and counter
 Enemy enemies[MAX_ENEMIES];
@@ -32,19 +34,17 @@ void handle_events(int *running) {
             } else if (event.key.keysym.sym == SDLK_w) {
                 move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle));
             } else if (event.key.keysym.sym == SDLK_s) {
-<<<<<<< HEAD
                 move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle)); // Move backward
             } else if (event.key.keysym.sym == SDLK_d) {
                 // Strafe left
                 move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
             } else if (event.key.keysym.sym == SDLK_a) {
                 // Strafe right
-=======
                 move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle));
             } else if (event.key.keysym.sym == SDLK_d) {
                 move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
             } else if (event.key.keysym.sym == SDLK_a) {
->>>>>>> Walid_testing
+
                 move_player(0.1 * sin(player.angle), -0.1 * cos(player.angle));
             } else if (event.key.keysym.sym == SDLK_LEFT) {
                 player.angle -= 0.1;
@@ -80,16 +80,17 @@ void move_player(float dx, float dy) {
     }
 }
 
-// Fire the weapon, playing sound, triggering fire effect, and checking for enemy hits
 void fire_weapon(void) {
     if (gunshot_sound) {
+        Mix_HaltChannel(-1); // Stop all currently playing sounds
         if (Mix_PlayChannel(-1, gunshot_sound, 0) == -1) {
             fprintf(stderr, "Failed to play gunshot sound! SDL_mixer Error: %s\n", Mix_GetError());
         }
     }
     recoil_offset = 20;
-    show_fire_effect = true; // Trigger fire effect
-    fire_start_time = SDL_GetTicks(); // Record start time
+    show_fire_effect = true;
+    fire_start_time = SDL_GetTicks();
+
 
     float rayDirX = cos(player.angle);
     float rayDirY = sin(player.angle);
@@ -114,14 +115,16 @@ void fire_weapon(void) {
             }
         }
     }
-}
 
-// Load sound effects into memory
+}
 bool load_sounds(void) {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
         fprintf(stderr, "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
         return false;
     }
+
+    // Allocate more mixing channels
+    Mix_AllocateChannels(16);  // Default is 8, increase to 16
 
     gunshot_sound = Mix_LoadWAV("assets/sounds/final_shot.wav");
     if (!gunshot_sound) {

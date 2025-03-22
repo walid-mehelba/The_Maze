@@ -7,9 +7,8 @@ static Uint32 flash_start_time = 0;
 // Global flag for fire effect
 bool show_fire_effect = false;
 Uint32 fire_start_time = 0; // Moved from player.c
-
-// Font for text rendering
 TTF_Font *font = NULL;
+
 
 // Render a wall slice with texture mapping
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x) {
@@ -213,7 +212,7 @@ bool init_ttf(void) {
         fprintf(stderr, "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
-    font = TTF_OpenFont("assets/arial.ttf", 24);
+    font = TTF_OpenFont("assets/arial.TTF", 24);
     if (!font) {
         fprintf(stderr, "Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
         return false;

@@ -1,10 +1,9 @@
 #ifndef SDL_UTILS_H
 #define SDL_UTILS_H
 
-#include </opt/homebrew/include/SDL2/SDL.h>
-#include </opt/homebrew/include/SDL2/SDL_image.h>
+#include <SDL2/SDL.h>
 #include <stdio.h>
-
+#include <SDL2/SDL_image.h>
 // Function prototypes
 
 /**

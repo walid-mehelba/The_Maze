@@ -1,27 +1,18 @@
-CC = clang
-CFLAGS = -I/opt/homebrew/include/SDL2 -Wall -g
-LDLIBS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
-TARGET = the_maze
-SRC_DIR = src
-OBJ_DIR = obj
-SOURCES = $(wildcard $(SRC_DIR)/*.c)
-OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+CC = gcc
+CFLAGS = -Wall -g -Iinc -I/usr/include/SDL2
+LDFLAGS = -L/usr/lib -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lm
 
-.PHONY: all clean run
+SRC = src/main.c src/map.c src/player.c src/raycasting.c src/sdl_utils.c src/textures.c
+OBJ = $(SRC:.c=.o)
+TARGET = the_maze
 
 all: $(TARGET)
 
-$(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) $(LDLIBS) -o $@
+$(TARGET): $(OBJ)
+	$(CC) $(OBJ) $(LDFLAGS) -o $(TARGET)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
-
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
-
-run: $(TARGET)
-	./$(TARGET)
+	rm -f $(OBJ) $(TARGET)
