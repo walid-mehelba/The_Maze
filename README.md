@@ -1,4 +1,5 @@
 # The Maze
+[![Watch the video](https://img.youtube.com/vi/tJU38sGLad0/0.jpg)](https://youtu.be/tJU38sGLad0)
 
 ## Overview
 **The Maze** is a **3D maze game** built using **C** and **SDL2**. It features a first-person view, raycasting-based rendering, enemy interactions, and weapon mechanics.
