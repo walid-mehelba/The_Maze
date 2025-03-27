@@ -1,4 +1,5 @@
-# The Maze
+# The Maze Game
+## click to watch demo
 [![Watch the video](https://img.youtube.com/vi/tJU38sGLad0/0.jpg)](https://youtu.be/tJU38sGLad0)
 
 ## Overview
