@@ -31,7 +31,6 @@ void handle_events(int *running) {
         } else if (event.type == SDL_KEYDOWN) {
             if (event.key.keysym.sym == SDLK_ESCAPE) {
                 *running = 0;
-<<<<<<< HEAD
             } else if (event.key.keysym.sym == SDLK_w) {
                 move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle));
             } else if (event.key.keysym.sym == SDLK_s) {
@@ -51,7 +50,6 @@ void handle_events(int *running) {
                 player.angle -= 0.1;
             } else if (event.key.keysym.sym == SDLK_RIGHT) {
                 player.angle += 0.1;
-=======
             } else if (event.key.keysym.sym == SDLK_p) { // Toggle pause with 'P'
                 paused = !paused;
             } else if (!paused) { // Only process movement/fire when not paused
@@ -68,7 +66,6 @@ void handle_events(int *running) {
                 } else if (event.key.keysym.sym == SDLK_RIGHT) {
                     player.angle += 0.1;
                 }
->>>>>>> Walid_testing
             }
         } else if (event.type == SDL_MOUSEBUTTONDOWN && !paused) { // Fire only when not paused
             if (event.button.button == SDL_BUTTON_LEFT) {
@@ -109,10 +106,6 @@ void fire_weapon(void) {
     recoil_offset = 20;
     show_fire_effect = true;
     fire_start_time = SDL_GetTicks();
-<<<<<<< HEAD
-
-=======
->>>>>>> Walid_testing
 
     float rayDirX = cos(player.angle);
     float rayDirY = sin(player.angle);

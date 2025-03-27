@@ -6,19 +6,13 @@ static Uint32 flash_start_time = 0;
 
 // Global flag for fire effect
 bool show_fire_effect = false;
-<<<<<<< HEAD
+
 Uint32 fire_start_time = 0; // Moved from player.c
-TTF_Font *font = NULL;
-
-=======
-Uint32 fire_start_time = 0;
-
-// Font for text rendering
 TTF_Font *font = NULL;
 
 // Pause state
 bool paused = false; // New: Initialized as not paused
->>>>>>> Walid_testing
+
 
 // Render a wall slice with texture mapping
 void draw_walls(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int w, int h, float wall_hit_x) {
