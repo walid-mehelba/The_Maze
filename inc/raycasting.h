@@ -31,7 +31,7 @@ typedef struct {
     float x, y;     // Enemy's X and Y coordinates in the map
     SDL_Texture *texture; // Texture for rendering the enemy
     bool alive;     // Whether the enemy is alive or defeated
-    float speed;    // Movement speed of the enemy (units per frame)
+    float speed;    // Movement speed (unused, kept for consistency)
 } Enemy;
 
 // Global variables (defined in other source files)
@@ -46,11 +46,17 @@ extern int player_health;
 extern Mix_Chunk *damage_sound;
 extern bool show_damage_flash;
 extern TTF_Font *font;
+<<<<<<< HEAD
 extern bool show_fire_effect;       // Flag for fire effect when shooting
 extern Uint32 fire_start_time;
 extern Mix_Chunk *damage_sound;
 
 // Time when fire effect started
+=======
+extern bool show_fire_effect;
+extern Uint32 fire_start_time;
+extern bool paused; // New: Game pause state
+>>>>>>> Walid_testing
 
 #define MAX_ENEMIES 20
 extern Enemy enemies[MAX_ENEMIES];
@@ -70,10 +76,10 @@ bool load_sounds(void);
 void free_sounds(void);
 void spawn_enemy(float x, float y, SDL_Texture *texture);
 void render_enemies(SDL_Renderer *renderer);
-void move_enemies(void);
 void enemy_attack(void);
 bool init_ttf(void);
 void render_health(SDL_Renderer *renderer);
+void render_pause_screen(SDL_Renderer *renderer); // New: Render pause message
 void cleanup_ttf(void);
 
 #endif
