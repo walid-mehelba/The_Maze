@@ -6,7 +6,7 @@
 **The Maze** is a **3D maze game** built using **C** and **SDL2**. It features a first-person view, raycasting-based rendering, enemy interactions, and weapon mechanics.
 
 ## Landing Page link
-[https://walid-mehelba.github.io/The_Maze_Game/]
+[link](https://walid-mehelba.github.io/The_Maze_Game/)
 
 ## Features
 - 🏰 **Raycasting Engine** for 3D rendering.
