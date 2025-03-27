@@ -23,59 +23,51 @@ Enemy enemies[MAX_ENEMIES];
 int num_enemies = 0;
 
 // Handle keyboard and mouse input events
+// ///
 void handle_events(int *running) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             *running = 0;
         } else if (event.type == SDL_KEYDOWN) {
-            if (event.key.keysym.sym == SDLK_ESCAPE) {
-                *running = 0;
-            } else if (event.key.keysym.sym == SDLK_w) {
-                move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle));
-            } else if (event.key.keysym.sym == SDLK_s) {
-                move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle)); // Move backward
-            } else if (event.key.keysym.sym == SDLK_d) {
-                // Strafe left
-                move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
-            } else if (event.key.keysym.sym == SDLK_a) {
-                // Strafe right
-                move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle));
-            } else if (event.key.keysym.sym == SDLK_d) {
-                move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
-            } else if (event.key.keysym.sym == SDLK_a) {
-
-                move_player(0.1 * sin(player.angle), -0.1 * cos(player.angle));
-            } else if (event.key.keysym.sym == SDLK_LEFT) {
-                player.angle -= 0.1;
-            } else if (event.key.keysym.sym == SDLK_RIGHT) {
-                player.angle += 0.1;
-            } else if (event.key.keysym.sym == SDLK_p) { // Toggle pause with 'P'
-                paused = !paused;
-            } else if (!paused) { // Only process movement/fire when not paused
-                if (event.key.keysym.sym == SDLK_w) {
+            switch (event.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    *running = 0;
+                    break;
+                case SDLK_w:
                     move_player(0.1 * cos(player.angle), 0.1 * sin(player.angle));
-                } else if (event.key.keysym.sym == SDLK_s) {
+                    break;
+                case SDLK_s:
                     move_player(-0.1 * cos(player.angle), -0.1 * sin(player.angle));
-                } else if (event.key.keysym.sym == SDLK_d) {
-                    move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
-                } else if (event.key.keysym.sym == SDLK_a) {
+                    break;
+                case SDLK_a:
                     move_player(0.1 * sin(player.angle), -0.1 * cos(player.angle));
-                } else if (event.key.keysym.sym == SDLK_LEFT) {
+                    break;
+                case SDLK_d:
+                    move_player(-0.1 * sin(player.angle), 0.1 * cos(player.angle));
+                    break;
+                case SDLK_LEFT:
                     player.angle -= 0.1;
-                } else if (event.key.keysym.sym == SDLK_RIGHT) {
+                    break;
+                case SDLK_RIGHT:
                     player.angle += 0.1;
-                }
+                    break;
+                case SDLK_p:
+                    paused = !paused;
+                    break;
             }
-        } else if (event.type == SDL_MOUSEBUTTONDOWN && !paused) { // Fire only when not paused
+        } else if (event.type == SDL_MOUSEBUTTONDOWN && !paused) {
             if (event.button.button == SDL_BUTTON_LEFT) {
                 fire_weapon();
             }
-        } else if (event.type == SDL_MOUSEMOTION && !paused) { // Mouse rotation only when not paused
+        } else if (event.type == SDL_MOUSEMOTION && !paused) {
             int mouse_x = event.motion.x;
             int delta_x = mouse_x - (SCREEN_WIDTH / 2);
-            player.angle += delta_x * 0.005;
-            SDL_WarpMouseInWindow(window, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+
+            if (mouse_x != SCREEN_WIDTH / 2) {
+                player.angle += delta_x * 0.005;
+                SDL_WarpMouseInWindow(window, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+            }
         }
     }
 
@@ -85,6 +77,7 @@ void handle_events(int *running) {
     }
 }
 
+//////////////////
 // Move the player, checking for wall collisions
 void move_player(float dx, float dy) {
     int new_x = (int)(player.x + dx);
