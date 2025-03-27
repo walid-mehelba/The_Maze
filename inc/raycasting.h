@@ -46,17 +46,15 @@ extern int player_health;
 extern Mix_Chunk *damage_sound;
 extern bool show_damage_flash;
 extern TTF_Font *font;
-<<<<<<< HEAD
 extern bool show_fire_effect;       // Flag for fire effect when shooting
 extern Uint32 fire_start_time;
 extern Mix_Chunk *damage_sound;
 
 // Time when fire effect started
-=======
+
 extern bool show_fire_effect;
 extern Uint32 fire_start_time;
 extern bool paused; // New: Game pause state
->>>>>>> Walid_testing
 
 #define MAX_ENEMIES 20
 extern Enemy enemies[MAX_ENEMIES];
