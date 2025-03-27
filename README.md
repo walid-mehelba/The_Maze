@@ -28,19 +28,13 @@ Ensure you have the following installed:
    ```
 2. **Compile the project:**
    ```sh
-<<<<<<< HEAD
    make clean
-=======
->>>>>>> Walid_testing
    make
    ```
 3. **Run the game:**
    ```sh
-<<<<<<< HEAD
    ./the_maze
-=======
    ./maze
->>>>>>> Walid_testing
    ```
 
 ## Controls
@@ -78,8 +72,3 @@ Ensure you have the following installed:
 ## Credits
 - **Developers:** Walid Mehelba & Laila Mohamed
 - **Technologies:** C, SDL2, SDL_mixer, SDL_ttf, SDL_image
-<<<<<<< HEAD
-=======
-
-
->>>>>>> Walid_testing
