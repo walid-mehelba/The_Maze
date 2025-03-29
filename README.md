@@ -38,7 +38,6 @@ Ensure you have the following installed:
 3. **Run the game:**
    ```sh
    ./the_maze
-   ./maze
    ```
 
 ## Controls
